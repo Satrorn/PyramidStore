@@ -1,0 +1,52 @@
+站点信息
+2
+文章
+1
+评论
+25/12/03
+更新
+文章信息
+1167
+字数
+25/12/03
+创建
+25/12/03
+修改
+ 网络板
+CF_Workers 反代 TG 机器人 Api
+评论区
+CF_Workers 反代 TG 机器人 Api
+已发布 0 天
+admin
+1. 创建一个新 workers
+
+const whitelist = ["/bot12345:"];
+const tg_host = "api.telegram.org";
+
+addEventListener('fetch', event => {
+    event.respondWith(handleRequest(event.request))
+})
+
+function validate(path) {
+    for (var i = 0; i < whitelist.length; i++) {
+        if (path.startsWith(whitelist[i]))
+            return true;
+    }
+    return false;
+}
+
+async function handleRequest(request) {
+    var u = new URL(request.url);
+    u.host = tg_host;
+    if (!validate(u.pathname))
+        return new Response('Unauthorized', {
+            status: 403
+        });
+    var req = new Request(u, {
+        method: request.method,
+        headers: request.headers,
+        body: request.body
+    });
+    const result = await fetch(req);
+    return result;
+}
